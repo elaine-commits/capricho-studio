@@ -42,6 +42,10 @@ test.describe("PostgreSQL authenticated workflows", () => {
     ]);
     await pool.end();
   });
+  test.afterEach(async ({ page }, info) => {
+    if (info.status !== info.expectedStatus)
+      console.log("Browser state:", await page.locator("body").innerText());
+  });
   async function login(role: string) {
     const context = await createRequest.newContext({
       baseURL: process.env.APP_URL ?? "http://localhost:3000",

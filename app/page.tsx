@@ -186,6 +186,7 @@ export default function Home() {
           {Object.entries(modules).map(([id, m]) => (
             <button
               key={id}
+              disabled={!user}
               onClick={() => setKind(id)}
               aria-current={kind === id ? "page" : undefined}
             >
@@ -206,6 +207,7 @@ export default function Home() {
             </p>
           </div>
           <button
+            disabled={!user}
             onClick={async () => {
               await api("/api/auth/logout", {});
               location.href = "/login";

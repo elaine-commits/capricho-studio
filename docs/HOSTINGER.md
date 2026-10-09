@@ -11,3 +11,5 @@ Confirmar plano Hostinger: esta aplicação exige Node.js persistente e PostgreS
 7. Publicar apenas após autorização expressa. Nenhum deploy automático está configurado.
 
 QORE: usar link autenticado para / no menu Marketing → STUDIO. Sessões são independentes. SSO/OIDC exige contrato homologado (issuer, audience, redirect URI, mapeamento de usuários). A aplicação bloqueia iframe por segurança; alterar somente após decisão de segurança explícita.
+
+O exemplo deploy/nginx.conf.example inclui limite de login por IP, complemento ao limite por e-mail do aplicativo. Confirmar hostname e certificados; não usar os placeholders em produção. Armazenamento privado usa STUDIO_STORAGE_PATH (padrão storage); aplicar quotas do volume e backups. Recursos de campanhas/vídeos não publicam mídia automaticamente.
