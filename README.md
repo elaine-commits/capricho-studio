@@ -2,7 +2,7 @@
 
 Aplicativo Next.js para QORE → Marketing → STUDIO. Fundação empresarial em desenvolvimento; **não homologado para produção**.
 
-Inclui login, sessões PostgreSQL, papéis admin/editor/reviewer/viewer, produtos/SKUs, referências de fotografias reais, especificações de peças, descrições, campanhas, roteiros/vídeos e checklist QA independente. Leia [auditoria e limitações](docs/AUDIT.md), [autenticação](docs/AUTH_DATABASE.md) e [Hostinger](docs/HOSTINGER.md).
+Inclui login, sessões PostgreSQL, papéis admin/editor/reviewer/viewer, produtos/SKUs, referências de fotografias reais, especificações de peças, descrições, campanhas, roteiros/vídeos e checklist QA independente. Leia [auditoria e limitações](docs/AUDIT.md), [resultados dos testes](docs/TEST_RESULTS.md), [contrato QORE](docs/QORE_INTEGRATION.md), [autenticação](docs/AUTH_DATABASE.md) e [Hostinger](docs/HOSTINGER.md).
 
 ## Executar
 
