@@ -4,3 +4,8 @@ node_modules/
 .env.local
 .env.*.local
 *.log
+.env.*
+!.env.example
+playwright-report/
+test-results/
+*.tsbuildinfo
