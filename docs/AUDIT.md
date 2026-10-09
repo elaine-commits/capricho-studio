@@ -10,11 +10,11 @@ Produtos, biblioteca, especificações de peças, descrições, campanhas e rote
 
 ## Limitações e pendências
 - Biblioteca registra URLs; ainda não faz upload, versionamento, armazenamento privado ou verificação visual da fotografia.
-- Peças registram formato, canal, fotografia e texto; exportação gráfica, editor de camadas e integração Canva pendentes.
-- Descrições são inseridas por usuário; enriquecimento externo e geração assistida pendentes.
+- Peças registram formato, canal, fotografia e texto. Exportação PNG da fotografia principal aprovada, em fundo branco e sem texto, preserva proporção; depende de CORS da origem. Editor de camadas, remoção de fundo, composição de texto e integração Canva pendentes.
+- Descrições podem ser preenchidas com dados cadastrados, incluindo aplicações apenas se marcadas como verificadas. Enriquecimento externo e geração por IA pendentes.
 - Vídeos registram roteiro e referência/link; renderização/edição pendentes.
 - Listagem limitada aos 500 registros recentes; paginação, busca, edição e arquivamento pendentes.
-- Briefings locais antigos continuam no navegador, mas interface anterior foi substituída. Importação para banco ainda pendente. Não apagar localStorage; utilizar backup JSON da versão anterior para migração posterior.
+- Briefings locais antigos continuam acessíveis em /legacy, com busca/importação/exportação. Importação para banco ainda pendente. Não apagar localStorage; utilizar backup JSON para migração posterior.
 - QA humano: checklist não comprova sozinho fidelidade/português, precisa de evidência e inspeção real.
 - Cadastro/gestão de usuários por script administrativo; redefinição de senha, MFA e SSO ainda pendentes. Rate limit por IP/proxy e limpeza periódica de sessões/limites pendentes.
 - QORE, Drive, marketplaces, IA e redes sociais não conectados. Nenhuma credencial solicitada ou API de negócio assumida.
