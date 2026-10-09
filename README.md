@@ -39,3 +39,9 @@ Este repositório foi identificado como **público**. Não adicione tokens, segr
 5. Conectar ao QORE ERP após homologação das APIs.
 
 Nenhuma funcionalidade deve ser marcada como homologada sem testes reais.
+
+## Fundação de banco de dados (não implantada)
+
+O arquivo `db/migrations/001_studio_foundation.sql` define o esquema inicial para PostgreSQL com usuários, briefings, papéis, estados e auditoria. Consulte `docs/AUTH_DATABASE.md` antes de executar. **Nenhuma migração foi aplicada em produção.**
+
+Os testes de contrato SQL verificam a presença das tabelas e restrições básicas, mas não substituem testes reais contra PostgreSQL.
