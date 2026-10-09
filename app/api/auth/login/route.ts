@@ -1,7 +1,59 @@
-import {randomBytes} from 'node:crypto';
-import {compare} from 'bcryptjs';
-import {cookies} from 'next/headers';
-import {z} from 'zod';
-import {db} from '../../../../lib/db';
-import {readJson,checkOrigin,digest,failure,ApiError} from '../../../../lib/auth';
-export async function POST(request:Request){try{checkOrigin(request);const parsed=z.object({email:z.string().email().max(254),password:z.string().min(1).max(128)}).safeParse(await readJson(request));if(!parsed.success)throw new ApiError(400,'Dados inválidos');const {email,password}=parsed.data;const key=digest(email.toLowerCase());const limit=await db().query(`INSERT INTO studio_login_attempts(key_hash) VALUES($1) ON CONFLICT(key_hash) DO UPDATE SET attempts=CASE WHEN studio_login_attempts.window_start<now()-interval '15 minutes' THEN 1 ELSE studio_login_attempts.attempts+1 END,window_start=CASE WHEN studio_login_attempts.window_start<now()-interval '15 minutes' THEN now() ELSE studio_login_attempts.window_start END RETURNING attempts`,[key]);if(limit.rows[0].attempts>10)throw new ApiError(429,'Tente novamente em 15 minutos');const found=await db().query('SELECT id,password_hash,active FROM studio_users WHERE lower(email)=$1',[email.toLowerCase()]);const user=found.rows[0];const valid=await compare(password,user?.password_hash??'$2b$12$LQv3c1yqBWVHxkd0LHAkCOYxM9PrkQQ7qCC.YWEKGFLG.CzrG.G1K');if(!valid||!user?.active)throw new ApiError(401,'E-mail ou senha inválidos');const token=randomBytes(32).toString('hex');await db().query("INSERT INTO studio_sessions VALUES($1,$2,now()+interval '8 hours')",[digest(token),user.id]);(await cookies()).set('studio_session',token,{httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:'strict',path:'/',maxAge:28800});return Response.json({ok:true});}catch(e){return failure(e)}}
+import { randomBytes } from "node:crypto";
+import { compare } from "bcryptjs";
+import { cookies } from "next/headers";
+import { z } from "zod";
+import { db } from "../../../../lib/db";
+import {
+  readJson,
+  checkOrigin,
+  digest,
+  failure,
+  ApiError,
+} from "../../../../lib/auth";
+export async function POST(request: Request) {
+  try {
+    checkOrigin(request);
+    const parsed = z
+      .object({
+        email: z.string().email().max(254),
+        password: z.string().min(1).max(128),
+      })
+      .safeParse(await readJson(request));
+    if (!parsed.success) throw new ApiError(400, "Dados inválidos");
+    const { email, password } = parsed.data;
+    const key = digest(email.toLowerCase());
+    const limit = await db().query(
+      `INSERT INTO studio_login_attempts(key_hash) VALUES($1) ON CONFLICT(key_hash) DO UPDATE SET attempts=CASE WHEN studio_login_attempts.window_start<now()-interval '15 minutes' THEN 1 ELSE studio_login_attempts.attempts+1 END,window_start=CASE WHEN studio_login_attempts.window_start<now()-interval '15 minutes' THEN now() ELSE studio_login_attempts.window_start END RETURNING attempts`,
+      [key],
+    );
+    if (limit.rows[0].attempts > 10)
+      throw new ApiError(429, "Tente novamente em 15 minutos");
+    const found = await db().query(
+      "SELECT id,password_hash,active FROM studio_users WHERE lower(email)=$1",
+      [email.toLowerCase()],
+    );
+    const user = found.rows[0];
+    const valid = await compare(
+      password,
+      user?.password_hash ??
+        "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYxM9PrkQQ7qCC.YWEKGFLG.CzrG.G1K",
+    );
+    if (!valid || !user?.active)
+      throw new ApiError(401, "E-mail ou senha inválidos");
+    const token = randomBytes(32).toString("hex");
+    await db().query(
+      "INSERT INTO studio_sessions VALUES($1,$2,now()+interval '8 hours')",
+      [digest(token), user.id],
+    );
+    (await cookies()).set("studio_session", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 28800,
+    });
+    return Response.json({ ok: true });
+  } catch (e) {
+    return failure(e);
+  }
+}

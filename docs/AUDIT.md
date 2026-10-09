@@ -9,11 +9,11 @@ Sessões opacas aleatórias, hash SHA-256 do token no banco, senha bcrypt custo 
 Produtos, biblioteca, especificações de peças, descrições, campanhas e roteiros/vídeos têm formulários e listagem persistente. Identidade preservada em preto/prata/branco/vermelho. Nenhuma característica de produto gerada automaticamente. Testes usam somente fixtures sintéticas.
 
 ## Limitações e pendências
-- Biblioteca registra URLs; ainda não faz upload, versionamento, armazenamento privado ou verificação visual da fotografia.
+- Biblioteca registra URLs e recebe uploads PNG/JPEG/WebP até 10 MB em armazenamento privado, servido apenas a usuários autenticados. Exige volume persistente e backup coordenado com banco. Verifica assinatura e decodifica com limite de 16 megapixels; antivírus, quotas e versionamento ainda pendentes.
 - Peças registram formato, canal, fotografia e texto. Exportação PNG da fotografia principal aprovada, em fundo branco e sem texto, preserva proporção; depende de CORS da origem. Editor de camadas, remoção de fundo, composição de texto e integração Canva pendentes.
 - Descrições podem ser preenchidas com dados cadastrados, incluindo aplicações apenas se marcadas como verificadas. Enriquecimento externo e geração por IA pendentes.
 - Vídeos registram roteiro e referência/link; renderização/edição pendentes.
-- Listagem limitada aos 500 registros recentes; paginação, busca, edição e arquivamento pendentes.
+- Listagem limitada aos 500 registros recentes; paginação, busca e arquivamento pendentes. Edição de rascunhos/reprovados verifica concorrência e bloqueia referências com materiais já aprovados.
 - Briefings locais antigos continuam acessíveis em /legacy, com busca/importação/exportação. Importação para banco ainda pendente. Não apagar localStorage; utilizar backup JSON para migração posterior.
 - QA humano: checklist não comprova sozinho fidelidade/português, precisa de evidência e inspeção real.
 - Cadastro/gestão de usuários por script administrativo; redefinição de senha, MFA e SSO ainda pendentes. Rate limit por IP/proxy e limpeza periódica de sessões/limites pendentes.

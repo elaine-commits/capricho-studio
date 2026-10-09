@@ -6,7 +6,7 @@ Confirmar plano Hostinger: esta aplicação exige Node.js persistente e PostgreS
 2. Configurar DATABASE_URL e APP_URL no ambiente seguro, fora do Git. Usar senha forte e TLS se banco remoto.
 3. Instalar Node 22, executar npm ci, npm run migrate, npm run build. Criar usuário inicial pelo script user:create com variáveis STUDIO_USER_EMAIL, STUDIO_USER_PASSWORD (14+ caracteres), STUDIO_USER_ROLE=admin. Não colocar senha na linha de comando/histórico.
 4. Executar npm start atrás de proxy HTTPS, bind privado e firewall. Alternativa: Dockerfile e deploy/compose.yml. Migrações e criação de usuário executadas a partir de checkout administrativo antes de iniciar app; imagem standalone não contém ferramentas administrativas.
-5. Validar login, logout, viewer bloqueado para escrita, produtos, fotos e auditoria independente. Confirmar cookies Secure/HttpOnly. Testar backup pg_dump e restauração em banco isolado.
+5. Validar login, logout, viewer bloqueado para escrita, produtos, fotos e auditoria independente. Confirmar cookies Secure/HttpOnly. Testar backup pg_dump e do volume studio_media, com restauração coordenada em ambiente isolado.
 6. Definir retenção, recuperação de senha, MFA/SSO, papéis, responsáveis e monitoramento antes de uso empresarial.
 7. Publicar apenas após autorização expressa. Nenhum deploy automático está configurado.
 
