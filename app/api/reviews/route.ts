@@ -1,0 +1,76 @@
+import { z } from "zod";
+import {
+  authorize,
+  readJson,
+  checkOrigin,
+  ApiError,
+  failure,
+} from "../../../lib/auth";
+import { db } from "../../../lib/db";
+import { checklist } from "../../../lib/record-schema";
+export async function POST(request: Request) {
+  let client;
+  try {
+    checkOrigin(request);
+    const user = await authorize(false, true);
+    const parsed = z
+      .object({
+        recordId: z.string().uuid(),
+        decision: z.enum(["approved", "rejected"]),
+        checklist: z.record(z.string(), z.boolean()),
+        notes: z.string().trim().min(1).max(3000),
+      })
+      .safeParse(await readJson(request));
+    if (!parsed.success) throw new ApiError(400, "Revisão inválida");
+    const v = parsed.data;
+    if (v.decision === "approved" && !checklist.safeParse(v.checklist).success)
+      throw new ApiError(400, "Todos os critérios precisam estar validados");
+    client = await db().connect();
+    await client.query("BEGIN");
+    const record = (
+      await client.query(
+        "SELECT * FROM studio_records WHERE id=$1 FOR UPDATE",
+        [v.recordId],
+      )
+    ).rows[0];
+    if (!record) throw new ApiError(404, "Registro não encontrado");
+    if (record.created_by === user.id)
+      throw new ApiError(403, "Revisão deve ser independente do autor");
+    if (!["draft", "in_review", "rejected"].includes(record.status))
+      throw new ApiError(409, "Registro já finalizado");
+    if (v.decision === "approved")
+      for (const key of ["productId", "assetId"])
+        if (record.data[key]) {
+          const related = (
+            await client.query(
+              "SELECT status FROM studio_records WHERE id=$1 FOR SHARE",
+              [record.data[key]],
+            )
+          ).rows[0];
+          if (related?.status !== "approved")
+            throw new ApiError(
+              409,
+              "Produto e fotografia vinculados precisam de aprovação prévia",
+            );
+        }
+    await client.query(
+      "INSERT INTO studio_reviews(record_id,reviewer_id,decision,checklist,notes) VALUES($1,$2,$3,$4,$5)",
+      [v.recordId, user.id, v.decision, v.checklist, v.notes],
+    );
+    await client.query(
+      "UPDATE studio_records SET status=$1,updated_at=now() WHERE id=$2",
+      [v.decision, v.recordId],
+    );
+    await client.query(
+      "INSERT INTO studio_audit_log(actor_user_id,entity_type,entity_id,action) VALUES($1,$2,$3,$4)",
+      [user.id, record.kind, record.id, v.decision],
+    );
+    await client.query("COMMIT");
+    return Response.json({ ok: true });
+  } catch (e) {
+    if (client) await client.query("ROLLBACK");
+    return failure(e);
+  } finally {
+    client?.release();
+  }
+}

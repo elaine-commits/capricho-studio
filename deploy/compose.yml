@@ -1,0 +1,27 @@
+services:
+  app:
+    build: ..
+    restart: unless-stopped
+    ports: ["127.0.0.1:3000:3000"]
+    environment:
+      DATABASE_URL: postgresql://studio:${POSTGRES_PASSWORD:?Required}@db:5432/studio
+      APP_URL: ${APP_URL:?Required}
+    volumes: [studio_media:/app/storage]
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: studio
+      POSTGRES_USER: studio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Required}
+    volumes: [studio_pg:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U studio"]
+      interval: 10s
+      retries: 5
+volumes:
+  studio_pg:
+  studio_media:

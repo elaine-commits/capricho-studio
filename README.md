@@ -1,47 +1,33 @@
 # STUDIO — Capricho Imports
 
-Aplicação web independente para produção de marketing, planejada para integração futura ao **QORE ERP → Marketing → STUDIO**.
+Aplicativo Next.js para QORE → Marketing → STUDIO. Fundação empresarial em desenvolvimento; **não homologado para produção**.
 
-## Versão atual: 0.3 (protótipo)
+Inclui login, sessões PostgreSQL, papéis admin/editor/reviewer/viewer, produtos/SKUs, referências de fotografias reais, especificações de peças, descrições, campanhas, roteiros/vídeos e checklist QA independente. Leia [auditoria e limitações](docs/AUDIT.md), [resultados dos testes](docs/TEST_RESULTS.md), [contrato QORE](docs/QORE_INTEGRATION.md), [autenticação](docs/AUTH_DATABASE.md) e [Hostinger](docs/HOSTINGER.md).
 
-- Interface responsiva com identidade Capricho Imports (preto, prata, branco e vermelho).
-- Cadastro de briefings por marca, canal, SKU e objetivo.
-- Pesquisa, exclusão com confirmação e exportação JSON.
-- Dados persistidos **apenas no navegador** (localStorage).
-- Endpoint de saúde: `GET /api/health`.
-- Workflow GitHub Actions para verificar TypeScript e build.
+## Executar
 
-**Não implementado:** autenticação, banco de dados, geração de imagens, QA Guardian, integrações QORE/Drive/marketplaces, hospedagem em produção.
+Node 22 e PostgreSQL 15+. Configurar DATABASE_URL e APP_URL usando `.env.example` como referência. Scripts Node precisam das variáveis exportadas no ambiente; Next carrega `.env.local`.
 
-## Executar localmente
-
-Requisitos: Node.js 22 e npm.
-
-```bash
-npm install
-npm run typecheck
-npm run build
+```sh
+npm ci
+npm run migrate
+npm run user:create
 npm run dev
 ```
 
-Abra http://localhost:3000.
+O script de usuário exige STUDIO_USER_EMAIL, STUDIO_USER_PASSWORD e STUDIO_USER_ROLE. Nunca enviar segredos ao Git. Não há senha padrão, cadastro público ou integração externa ativa.
 
-## Segurança
+## Validar
 
-Este repositório foi identificado como **público**. Não adicione tokens, segredos, dados internos, imagens proprietárias ou dados de clientes. O arquivo `.env.example` contém somente exemplos de variáveis, sem credenciais. Arquivos `.env` reais são ignorados pelo Git.
+```sh
+npm test
+npm run typecheck
+npm run build
+npm audit --omit=dev
+npx playwright install chromium
+npm run test:e2e
+```
 
-## Próximas etapas
+Testes de banco exigem DATABASE_URL de banco descartável já migrado. Sem banco, são explicitamente ignorados. CI utiliza PostgreSQL real e Chromium. Nenhum teste ignorado conta como aprovação.
 
-1. Verificar CI e corrigir erros reais de build.
-2. Criar persistência em banco de dados e autenticação.
-3. Implementar biblioteca de ativos e cadastro de produtos.
-4. Implementar fluxos de produção e auditoria visual.
-5. Conectar ao QORE ERP após homologação das APIs.
-
-Nenhuma funcionalidade deve ser marcada como homologada sem testes reais.
-
-## Fundação de banco de dados (não implantada)
-
-O arquivo `db/migrations/001_studio_foundation.sql` define o esquema inicial para PostgreSQL com usuários, briefings, papéis, estados e auditoria. Consulte `docs/AUTH_DATABASE.md` antes de executar. **Nenhuma migração foi aplicada em produção.**
-
-Os testes de contrato SQL verificam a presença das tabelas e restrições básicas, mas não substituem testes reais contra PostgreSQL.
+Repositório público: apenas código, configuração exemplo e fixtures sintéticas. Fotografias e dados empresariais devem ficar no armazenamento privado, fora do repositório.
