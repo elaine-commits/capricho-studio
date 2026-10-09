@@ -1,7 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 export default function Login() {
   const [error, setError] = useState("");
+  const [ready, setReady] = useState(false);
+  useEffect(() => setReady(true), []);
   return (
     <main>
       <div className="logo">
@@ -46,7 +48,9 @@ export default function Login() {
             maxLength={128}
           />
         </label>
-        <button className="primary">Entrar</button>
+        <button className="primary" disabled={!ready}>
+          Entrar
+        </button>
         <p role="alert">{error}</p>
       </form>
     </main>

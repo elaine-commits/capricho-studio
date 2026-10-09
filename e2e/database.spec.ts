@@ -49,6 +49,7 @@ test.describe("PostgreSQL authenticated workflows", () => {
   async function login(role: string) {
     const context = await createRequest.newContext({
       baseURL: process.env.APP_URL ?? "http://localhost:3000",
+      ignoreHTTPSErrors: true,
       extraHTTPHeaders: {
         Origin: process.env.APP_URL ?? "http://localhost:3000",
       },
@@ -58,6 +59,8 @@ test.describe("PostgreSQL authenticated workflows", () => {
     });
     expect(response.status()).toBe(200);
     expect(response.headers()["set-cookie"]).toContain("HttpOnly");
+    if (process.env.APP_URL?.startsWith("https:"))
+      expect(response.headers()["set-cookie"]).toContain("Secure");
     return context;
   }
   test("product uniqueness, real-photo linkage and independent QA", async () => {
@@ -219,6 +222,7 @@ test.describe("PostgreSQL authenticated workflows", () => {
     expect((await viewer.get("/api/assets/" + uploaded)).status()).toBe(200);
     const anonymous = await createRequest.newContext({
       baseURL: process.env.APP_URL ?? "http://localhost:3000",
+      ignoreHTTPSErrors: true,
     });
     expect((await anonymous.get("/api/assets/" + uploaded)).status()).toBe(401);
     await anonymous.dispose();
